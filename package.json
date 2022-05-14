@@ -1,0 +1,44 @@
+{
+  "name": "jalter",
+  "version": "3.0.1",
+  "description": "A NodeJS wrapper for Discord Selfbot",
+  "main": "build/index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "rm -rf build/ && tsc",
+    "docs": "npx typedoc --entryPointStrategy expand src/ index.ts",
+    "lint": "npx eslint . --ext .ts",
+    "lint:fix": "npx eslint . --fix",
+    "test:get": "npx ts-node test/jalter.get.ts"
+  },
+  "keywords": [
+    "discord",
+    "selfbot",
+    "api",
+    "discordapp"
+  ],
+  "author": "sinkaroid",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sinkaroid/jalter/issues"
+  },
+  "homepage": "https://github.com/sinkaroid/jalter#readme",
+  "dependencies": {
+    "phin": "^3.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.23",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
+    "changelog": "^1.4.2",
+    "eslint": "^7.32.0",
+    "npx": "^10.2.2",
+    "ts-node": "^10.7.0",
+    "typedoc": "^0.22.5",
+    "typedoc-plugin-rename-defaults": "^0.4.0",
+    "typescript": "^4.6.3"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
