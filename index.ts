@@ -1,4 +1,4 @@
-import { get, post, put, loop, remove, reply, create } from "./src/utils";
+import { get, post, put, loop, remove, reply, create, rateLimit } from "./src/utils";
 import c from "./src/const";
 
 class Jalter {
@@ -13,9 +13,11 @@ class Jalter {
     this.base = c.endpoint.baseurl;
     this.auth =  { "authorization": token };   
    
+    /*
     get(`${this.base}/users/@me`, this.auth).then(res => {
       if (res.statusCode !== 200) throw new Error(c.error.invalidToken);
     });
+    */
   }
 
   /**
@@ -211,6 +213,24 @@ class Jalter {
     return await remove(endpoint, this.auth).then(res => {
       return res.body as object;
     });
+  }
+
+  /**
+   * Trigger Typing Indicator
+   * @param {string} channelId the channel id
+   * @returns 204 empty response on success
+   * @example
+   * ```js
+   * jalter.startTyping("974918359500075041").then((res) => { console.log("startTyping", res); });
+   * ```
+   * https://discord.com/developers/docs/resources/channel#trigger-typing-indicator
+   */
+  async typingMessage(channelId: string, timeout = 3000): Promise<void> {
+    const endpoint = `${this.base}/channels/${channelId}/typing`;
+    await post(endpoint, "", this.auth).then(res => {
+      return res.body as object;
+    });
+    await rateLimit(timeout);
   }
 
   /**
