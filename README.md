@@ -7,6 +7,7 @@
 <p align="center">
 	<a href="https://github.com/sinkaroid/jalter/actions/workflows/docs.yml"><img src="https://github.com/sinkaroid/jalter/actions/workflows/docs.yml/badge.svg"></a>
 	<a href="https://packagephobia.com/result?p=jalter"><img src="https://packagephobia.com/badge?p=jalter"></a>
+    <a href="https://codeclimate.com/github/sinkaroid/jalter/maintainability"><img src="https://api.codeclimate.com/v1/badges/385abc152872873786f4/maintainability" /></a>
 </p>
 
 Jalter is lightweight libs for Discord selfbot, yet it handle the most of Discord endpoint needs.  
@@ -98,6 +99,8 @@ CommonJS should do with `const Jalter = require("jalter")`
     - Leave a guild. Returns a 204 empty response on success.
 - [`Jalter.replyMessage(options)`](https://sinkaroid.github.io/jalter/classes/index.Jalter.html#replyMessage)
     - Reply to a message
+- [`Jalter.typingMessage(options)`](https://sinkaroid.github.io/jalter/classes/index.Jalter.html#typingMessage)
+    - Trigger Typing Indicator
 
 ### Non standard methods
 - [`Jalter.sendInterval(options)`](https://sinkaroid.github.io/jalter/classes/index.Jalter.html#sendInterval)
