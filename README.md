@@ -99,7 +99,7 @@ CommonJS should do with `const Jalter = require("jalter")`
 - [`Jalter.replyMessage(options)`](https://sinkaroid.github.io/jalter/classes/index.Jalter.html#replyMessage)
     - Reply to a message
 - [`Jalter.typingMessage(options)`](https://sinkaroid.github.io/jalter/classes/index.Jalter.html#typingMessage)
-    - Trigger Typing Indicator
+    - Trigger typing indicator
 
 ### Non standard methods
 - [`Jalter.sendInterval(options)`](https://sinkaroid.github.io/jalter/classes/index.Jalter.html#sendInterval)
