@@ -6,7 +6,6 @@
 
 <p align="center">
 	<a href="https://github.com/sinkaroid/jalter/actions/workflows/docs.yml"><img src="https://github.com/sinkaroid/jalter/actions/workflows/docs.yml/badge.svg"></a>
-	<a href="https://packagephobia.com/result?p=jalter"><img src="https://packagephobia.com/badge?p=jalter"></a>
     <a href="https://codeclimate.com/github/sinkaroid/jalter/maintainability"><img src="https://api.codeclimate.com/v1/badges/385abc152872873786f4/maintainability" /></a>
 </p>
 
