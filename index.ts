@@ -1,18 +1,18 @@
-import { get, post, put, loop, remove, reply, create, rateLimit } from "./src/utils";
+import { loopInterval, loopCount, rateLimit, request } from "./src/utils";
 import c from "./src/const";
 
 class Jalter {
-    
+
   private base: string
   private auth: object
 
   static default: typeof Jalter;
-    
+
   constructor(token: string) {
     if (!token) throw new Error(c.error.missingToken);
     this.base = c.endpoint.baseurl;
-    this.auth =  { "authorization": token };   
-   
+    this.auth = { "authorization": token };
+
     /*
     get(`${this.base}/users/@me`, this.auth).then(res => {
       if (res.statusCode !== 200) throw new Error(c.error.invalidToken);
@@ -29,9 +29,9 @@ class Jalter {
   * ```
   * https://discord.com/developers/docs/resources/user#get-current-user
   */
-  async getMe(): Promise<object> {  
-    const endpoint = `${this.base}/users/@me`; 
-    return await get(endpoint, this.auth).then(res => {
+  async getMe(): Promise<object> {
+    const endpoint = `${this.base}/users/@me`;
+    return await request(endpoint, this.auth, "GET").then(res => {
       return res.body as object;
     });
   }
@@ -48,11 +48,11 @@ class Jalter {
    */
   async getUser(userId: string): Promise<object> {
     const endpoint = `${this.base}/users/${userId}`;
-    return await get(endpoint, this.auth).then(res => {
+    return await request(endpoint, this.auth, "GET").then(res => {
       return res.body as object;
     });
   }
-  
+
   /**
    * Post a message to a guild text or DM channel. Returns a message object
    * @param {string} channelId the channel id
@@ -66,7 +66,7 @@ class Jalter {
    */
   async sendMessage(channelId: string, text: string): Promise<object> {
     const endpoint = `${this.base}/channels/${channelId}/messages`;
-    return await post(endpoint, text, this.auth).then(res => {
+    return await request(endpoint, this.auth, "POST", { content: text }).then(res => {
       return res.body as object;
     });
   }
@@ -85,7 +85,7 @@ class Jalter {
    */
   async getMessage(channelId: string, limit: number): Promise<object> {
     const endpoint = `${this.base}/channels/${channelId}/messages?limit=${limit}`;
-    return await get(endpoint, this.auth).then(res => {
+    return await request(endpoint, this.auth, "GET").then(res => {
       return res.body as object;
     });
   }
@@ -102,7 +102,7 @@ class Jalter {
    */
   async getAuditLogs(guildId: string): Promise<object> {
     const endpoint = `${this.base}/guilds/${guildId}/audit-logs`;
-    return await get(endpoint, this.auth).then(res => {
+    return await request(endpoint, this.auth, "GET").then(res => {
       return res.body as object;
     });
   }
@@ -119,7 +119,7 @@ class Jalter {
    */
   async getRoles(guildId: string): Promise<object> {
     const endpoint = `${this.base}/guilds/${guildId}/roles`;
-    return await get(endpoint, this.auth).then(res => {
+    return await request(endpoint, this.auth, "GET").then(res => {
       return res.body as object;
     });
   }
@@ -128,7 +128,7 @@ class Jalter {
    * Kick a member from a guild
    * @param {string} guildId the guild id
    * @param {string} userId the user id
-   * @returns the member object that was removed
+   * @returns 204 empty response on success
    * @example
    * ```js
    * jalter.kickUser("974918359500075041", "317255788324454400").then((res) => { console.log("kickUser", res); });
@@ -137,7 +137,7 @@ class Jalter {
    */
   async kickUser(guildId: string, userId: string): Promise<object> {
     const endpoint = `${this.base}/guilds/${guildId}/members/${userId}`;
-    return await remove(endpoint, this.auth).then(res => {
+    return await request(endpoint, this.auth, "DELETE").then(res => {
       return res.body as object;
     });
   }
@@ -148,7 +148,7 @@ class Jalter {
    * @param {string} guildId the guild id
    * @param {string} userId the user id
    * @param {string} reason the reason for banning
-   * @returns the user object that was banned
+   * @returns 204 empty response on success
    * @example
    * ```js
    * jalter.banUser("974918359500075041", "974918359500075041", "I don't like you").then((res) => { console.log("banUser", res); });
@@ -157,7 +157,7 @@ class Jalter {
    */
   async banUser(guildId: string, userId: string, reason = ""): Promise<object> {
     const endpoint = `${this.base}/guilds/${guildId}/bans/${userId}`;
-    return await put(endpoint, reason, this.auth).then(res => {
+    return await request(endpoint, this.auth, "PUT", { delete_message_days: "7", reason }).then(res => {
       return res.body as object;
     });
   }
@@ -175,7 +175,7 @@ class Jalter {
    */
   async unBanUser(guildId: string, userId: string): Promise<void> {
     const endpoint = `${this.base}/guilds/${guildId}/bans/${userId}`;
-    await remove(endpoint, this.auth).then(res => {
+    await request(endpoint, this.auth, "DELETE").then(res => {
       return res.body as object;
     });
   }
@@ -193,7 +193,7 @@ class Jalter {
   async joinGuild(inviteUrl: string): Promise<object> {
     if (inviteUrl.startsWith("https")) throw new Error(c.error.notValidCode);
     const endpoint = `${this.base}/invites/${inviteUrl}`;
-    return await post(endpoint, "", this.auth).then(res => {
+    return await request(endpoint, this.auth, "POST", { content: "" }).then(res => {
       return res.body as object;
     });
   }
@@ -201,7 +201,7 @@ class Jalter {
   /**
    * Leave a guild. Returns a 204 empty response on success.
    * @param {string} guildId the guild id
-   * @returns the guild object that was left or null
+   * @returns 204 empty response on success
    * @example
    * ```js
    * jalter.leaveGuild("974918359500075041").then((res) => { console.log("leaveGuild", res); });
@@ -210,7 +210,7 @@ class Jalter {
    */
   async leaveGuild(guildId: string): Promise<object> {
     const endpoint = `${this.base}/users/@me/guilds/${guildId}`;
-    return await remove(endpoint, this.auth).then(res => {
+    return await request(endpoint, this.auth, "DELETE").then(res => {
       return res.body as object;
     });
   }
@@ -227,7 +227,7 @@ class Jalter {
    */
   async typingMessage(channelId: string, timeout = 3000): Promise<void> {
     const endpoint = `${this.base}/channels/${channelId}/typing`;
-    await post(endpoint, "", this.auth).then(res => {
+    await request(endpoint, this.auth, "POST").then(res => {
       return res.body as object;
     });
     await rateLimit(timeout);
@@ -247,7 +247,10 @@ class Jalter {
    */
   async replyMessage(channelId: string, messageId: string, text: string): Promise<object> {
     const endpoint = `${this.base}/channels/${channelId}/messages`;
-    return await reply(endpoint, messageId, text, this.auth).then(res => {
+    return await request(endpoint, this.auth, "POST", {
+      content: text,
+      message_reference: { message_id: messageId }
+    }).then(res => {
       return res.body as object;
     });
   }
@@ -265,7 +268,7 @@ class Jalter {
    */
   async deleteMessage(channelId: string, messageId: string): Promise<object> {
     const endpoint = `${this.base}/channels/${channelId}/messages/${messageId}`;
-    return await remove(endpoint, this.auth).then(res => {
+    return await request(endpoint, this.auth, "DELETE").then(res => {
       return res.body as object;
     });
   }
@@ -285,7 +288,7 @@ class Jalter {
   async createChannel(guildId: string, name: string, type: number): Promise<object> {
     if (!c.channelType.includes(type)) throw Error("Invalid channel type, please use one of the following: " + c.channelType.join(", "));
     const endpoint = `${this.base}/guilds/${guildId}/channels`;
-    return await create(endpoint, name, type, this.auth).then(res => {
+    return await request(endpoint, this.auth, "POST", { name, type }).then(res => {
       return res.body as object;
     });
   }
@@ -302,7 +305,7 @@ class Jalter {
    */
   async getChannels(guildId: string): Promise<object> {
     const endpoint = `${this.base}/guilds/${guildId}/channels`;
-    return await get(endpoint, this.auth).then(res => {
+    return await request(endpoint, this.auth, "GET").then(res => {
       return res.body as object;
     });
   }
@@ -330,8 +333,8 @@ class Jalter {
   async sendInterval(channelId: string, interval: number, textList: string[] = c.endpoint.hello): Promise<number> {
     if (!Array.isArray(textList)) throw new Error(c.error.notArray);
     if (interval < 1000) throw new Error(c.error.invalidDelay);
-  
-    return loop(async () => {
+
+    return loopInterval(async () => {
       this.sendMessage(channelId, textList[Math.floor(Math.random() * textList.length)]).then(console.log);
     }, interval);
   }
@@ -339,8 +342,8 @@ class Jalter {
   /**
    * Send a message on the channel and will stop once the count is reached 
    * @param {string} channelId the channel id
-   * @param {string} text the message text
    * @param {number} interval the interval delay time
+   * @param {string} text the message text
    * @param {number} count the number of messages to send
    * @returns the message object send
    * @example
@@ -352,9 +355,10 @@ class Jalter {
    */
   async sendCount(channelId: string, interval: number, text: string, count: number): Promise<void> {
     if (interval < 1000) throw new Error(c.error.invalidDelay);
-    for (let i = 0; i < count; i++) {
-      return this.sendMessage(channelId, text).then(console.log);
-    }
+
+    return loopCount(async () => {
+      this.sendMessage(channelId, text).then(console.log);
+    }, interval, count);
   }
 
 }
